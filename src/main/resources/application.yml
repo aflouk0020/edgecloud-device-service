@@ -33,3 +33,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+edgecloud:
+  device:
+    offline-threshold-seconds: ${DEVICE_OFFLINE_THRESHOLD_SECONDS:60}

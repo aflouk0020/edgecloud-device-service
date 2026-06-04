@@ -42,4 +42,10 @@ public class DeviceController {
     public ResponseEntity<List<DeviceResponse>> getAllDevices() {
         return ResponseEntity.ok(deviceRegistrationService.getAllDevices());
     }
+    
+    @PostMapping("/status/evaluate")
+    public ResponseEntity<Void> evaluateDeviceStatuses() {
+        deviceRegistrationService.evaluateDeviceStatuses();
+        return ResponseEntity.noContent().build();
+    }
 }
