@@ -12,4 +12,5 @@ public interface DeviceRegistrationService {
 
     DeviceResponse processHeartbeat(DeviceHeartbeatRequest request);
     List<DeviceResponse> getAllDevices();
+    void evaluateDeviceStatuses();
 }

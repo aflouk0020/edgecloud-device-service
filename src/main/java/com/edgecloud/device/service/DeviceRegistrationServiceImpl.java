@@ -9,14 +9,20 @@ import com.edgecloud.device.exception.DeviceNotFoundException;
 import com.edgecloud.device.exception.DuplicateDeviceException;
 import com.edgecloud.device.repository.EdgeDeviceRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.annotation.Value;
+import java.util.logging.Logger;
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Service
 public class DeviceRegistrationServiceImpl implements DeviceRegistrationService {
 
     private final EdgeDeviceRepository repository;
+    private static final Logger LOGGER = Logger.getLogger(DeviceRegistrationServiceImpl.class.getName());
 
+    @Value("${edgecloud.device.offline-threshold-seconds:60}")
+    private long offlineThresholdSeconds;
+    
     public DeviceRegistrationServiceImpl(EdgeDeviceRepository repository) {
         this.repository = repository;
     }
@@ -42,6 +48,23 @@ public class DeviceRegistrationServiceImpl implements DeviceRegistrationService 
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+    
+    @Override
+    public void evaluateDeviceStatuses() {
+        LocalDateTime thresholdTime = LocalDateTime.now().minusSeconds(offlineThresholdSeconds);
+
+        repository.findAll().forEach(device -> {
+            if (device.getLastHeartbeat() != null
+                    && device.getLastHeartbeat().isBefore(thresholdTime)
+                    && device.getStatus() == DeviceStatus.ONLINE) {
+
+                device.setStatus(DeviceStatus.OFFLINE);
+                repository.save(device);
+
+                LOGGER.info("Device marked OFFLINE due to missed heartbeat: " + device.getDeviceName());
+            }
+        });
     }
 
     @Override
