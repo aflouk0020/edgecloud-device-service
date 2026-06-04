@@ -5,6 +5,9 @@ import com.edgecloud.device.dto.DeviceRegistrationRequest;
 import com.edgecloud.device.dto.DeviceResponse;
 import com.edgecloud.device.service.DeviceRegistrationService;
 import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +36,10 @@ public class DeviceController {
 
         DeviceResponse response = deviceRegistrationService.processHeartbeat(request);
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<DeviceResponse>> getAllDevices() {
+        return ResponseEntity.ok(deviceRegistrationService.getAllDevices());
     }
 }
