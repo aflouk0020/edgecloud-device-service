@@ -26,6 +26,20 @@ public class GlobalExceptionHandler {
                 "path", request.getRequestURI()
         ));
     }
+    
+    @ExceptionHandler(DeviceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleDeviceNotFound(
+            DeviceNotFoundException ex,
+            HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "Not Found",
+                "message", ex.getMessage(),
+                "path", request.getRequestURI()
+        ));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(

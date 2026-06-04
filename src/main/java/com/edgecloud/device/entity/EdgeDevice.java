@@ -46,4 +46,11 @@ public class EdgeDevice {
     public DeviceStatus getStatus() { return status; }
     public LocalDateTime getRegisteredAt() { return registeredAt; }
     public LocalDateTime getLastHeartbeat() { return lastHeartbeat; }
+    public void setStatus(DeviceStatus status) {
+        this.status = status;
+    }
+
+    public void setLastHeartbeat(LocalDateTime lastHeartbeat) {
+        this.lastHeartbeat = lastHeartbeat;
+    }
 }
