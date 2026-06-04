@@ -1,5 +1,6 @@
 package com.edgecloud.device.controller;
 
+import com.edgecloud.device.dto.DeviceHeartbeatRequest;
 import com.edgecloud.device.dto.DeviceRegistrationRequest;
 import com.edgecloud.device.dto.DeviceResponse;
 import com.edgecloud.device.service.DeviceRegistrationService;
@@ -24,5 +25,13 @@ public class DeviceController {
 
         DeviceResponse response = deviceRegistrationService.registerDevice(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/heartbeat")
+    public ResponseEntity<DeviceResponse> receiveHeartbeat(
+            @Valid @RequestBody DeviceHeartbeatRequest request) {
+
+        DeviceResponse response = deviceRegistrationService.processHeartbeat(request);
+        return ResponseEntity.ok(response);
     }
 }

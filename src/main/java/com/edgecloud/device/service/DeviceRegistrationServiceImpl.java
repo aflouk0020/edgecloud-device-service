@@ -1,11 +1,16 @@
 package com.edgecloud.device.service;
 
+import com.edgecloud.device.dto.DeviceHeartbeatRequest;
 import com.edgecloud.device.dto.DeviceRegistrationRequest;
 import com.edgecloud.device.dto.DeviceResponse;
+import com.edgecloud.device.entity.DeviceStatus;
 import com.edgecloud.device.entity.EdgeDevice;
+import com.edgecloud.device.exception.DeviceNotFoundException;
 import com.edgecloud.device.exception.DuplicateDeviceException;
 import com.edgecloud.device.repository.EdgeDeviceRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class DeviceRegistrationServiceImpl implements DeviceRegistrationService {
@@ -26,6 +31,22 @@ public class DeviceRegistrationServiceImpl implements DeviceRegistrationService 
         device.setDeviceName(request.deviceName());
         device.setDeviceType(request.deviceType());
         device.setIpAddress(request.ipAddress());
+
+        EdgeDevice saved = repository.save(device);
+        return toResponse(saved);
+    }
+
+    @Override
+    public DeviceResponse processHeartbeat(DeviceHeartbeatRequest request) {
+        EdgeDevice device = repository.findById(request.deviceId())
+                .orElseThrow(() -> new DeviceNotFoundException("Device not found: " + request.deviceId()));
+
+        LocalDateTime heartbeatTime = request.timestamp() != null
+                ? request.timestamp()
+                : LocalDateTime.now();
+
+        device.setLastHeartbeat(heartbeatTime);
+        device.setStatus(DeviceStatus.ONLINE);
 
         EdgeDevice saved = repository.save(device);
         return toResponse(saved);
