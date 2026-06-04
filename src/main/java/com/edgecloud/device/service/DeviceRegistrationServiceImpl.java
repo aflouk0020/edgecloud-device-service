@@ -11,7 +11,7 @@ import com.edgecloud.device.repository.EdgeDeviceRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 @Service
 public class DeviceRegistrationServiceImpl implements DeviceRegistrationService {
 
@@ -34,6 +34,14 @@ public class DeviceRegistrationServiceImpl implements DeviceRegistrationService 
 
         EdgeDevice saved = repository.save(device);
         return toResponse(saved);
+    }
+    
+    @Override
+    public List<DeviceResponse> getAllDevices() {
+        return repository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @Override
