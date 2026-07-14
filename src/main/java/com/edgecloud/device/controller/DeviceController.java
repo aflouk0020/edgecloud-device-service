@@ -3,6 +3,8 @@ package com.edgecloud.device.controller;
 import com.edgecloud.device.dto.DeviceHeartbeatRequest;
 import com.edgecloud.device.dto.DeviceRegistrationRequest;
 import com.edgecloud.device.dto.DeviceResponse;
+import com.edgecloud.device.dto.DeviceSummaryResponse;
+import com.edgecloud.device.service.DeviceAnalyticsService;
 import com.edgecloud.device.service.DeviceRegistrationService;
 import jakarta.validation.Valid;
 
@@ -17,9 +19,13 @@ import org.springframework.web.bind.annotation.*;
 public class DeviceController {
 
     private final DeviceRegistrationService deviceRegistrationService;
+    private final DeviceAnalyticsService deviceAnalyticsService;
 
-    public DeviceController(DeviceRegistrationService deviceRegistrationService) {
+    public DeviceController(
+            DeviceRegistrationService deviceRegistrationService,
+            DeviceAnalyticsService deviceAnalyticsService) {
         this.deviceRegistrationService = deviceRegistrationService;
+        this.deviceAnalyticsService = deviceAnalyticsService;
     }
 
     @PostMapping("/register")
@@ -41,6 +47,11 @@ public class DeviceController {
     @GetMapping
     public ResponseEntity<List<DeviceResponse>> getAllDevices() {
         return ResponseEntity.ok(deviceRegistrationService.getAllDevices());
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<DeviceSummaryResponse> getDeviceSummary() {
+        return ResponseEntity.ok(deviceAnalyticsService.getSummary());
     }
     
     @PostMapping("/status/evaluate")
