@@ -16,12 +16,13 @@ final class TestJwtHelper {
 
     static String jwt() {
         SecretKey key = Keys.hmacShaKeyFor("edgecloud-monitor-development-secret-key-for-jwt-token-generation".getBytes(StandardCharsets.UTF_8));
+        Instant now = Instant.now();
         return Jwts.builder()
                 .subject("edgecloud-test")
                 .claim("userId", UUID.randomUUID().toString())
                 .claim("role", "ADMIN")
-                .issuedAt(Date.from(Instant.parse("2026-08-04T09:00:00Z")))
-                .expiration(Date.from(Instant.parse("2026-08-05T12:00:00Z")))
+                .issuedAt(Date.from(now.minusSeconds(60)))
+                .expiration(Date.from(now.plusSeconds(3600)))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
