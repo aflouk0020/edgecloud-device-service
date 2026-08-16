@@ -20,9 +20,10 @@ public class DeviceSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/management").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/management/configuration-templates").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/management/configuration-templates/**").hasRole("ADMIN")
+                        .requestMatchers("/management/projects/**").hasAnyRole("ADMIN", "OPERATOR", "PROJECT_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/management/**").hasRole("ADMIN")
                         .requestMatchers("/management/**").hasAnyRole("ADMIN", "OPERATOR")
-                        .requestMatchers(HttpMethod.GET, "/inventory").hasAnyRole("ADMIN", "OPERATOR")
+                        .requestMatchers(HttpMethod.GET, "/inventory").hasAnyRole("ADMIN", "OPERATOR", "PROJECT_ADMIN")
                         .anyRequest().permitAll())
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, exception) ->

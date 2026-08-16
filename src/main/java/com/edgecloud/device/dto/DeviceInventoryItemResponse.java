@@ -18,6 +18,7 @@ public record DeviceInventoryItemResponse(
         LocalDateTime registrationDate,
         LocalDateTime lastSeen,
         List<String> tags,
+        List<DeviceOrganisationLabelResponse> groups,
         String location,
         String description,
         String operatingSystem,
