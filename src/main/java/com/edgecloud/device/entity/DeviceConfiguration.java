@@ -9,6 +9,7 @@ public class DeviceConfiguration {
     @Id private UUID deviceId;
     private int pollingIntervalSeconds;
     private int heartbeatIntervalSeconds;
+    private int heartbeatTimeoutSeconds;
     private int metricsCollectionIntervalSeconds;
     @Enumerated(EnumType.STRING) private DeviceEnvironment environment;
     @Column(length=500) private String apiEndpoint;
@@ -22,6 +23,7 @@ public class DeviceConfiguration {
     public DeviceConfiguration(UUID deviceId) { this.deviceId=deviceId; }
     public UUID getDeviceId(){return deviceId;} public int getPollingIntervalSeconds(){return pollingIntervalSeconds;} public void setPollingIntervalSeconds(int v){pollingIntervalSeconds=v;}
     public int getHeartbeatIntervalSeconds(){return heartbeatIntervalSeconds;} public void setHeartbeatIntervalSeconds(int v){heartbeatIntervalSeconds=v;}
+    public int getHeartbeatTimeoutSeconds(){return heartbeatTimeoutSeconds;} public void setHeartbeatTimeoutSeconds(int v){heartbeatTimeoutSeconds=v;}
     public int getMetricsCollectionIntervalSeconds(){return metricsCollectionIntervalSeconds;} public void setMetricsCollectionIntervalSeconds(int v){metricsCollectionIntervalSeconds=v;}
     public DeviceEnvironment getEnvironment(){return environment;} public void setEnvironment(DeviceEnvironment v){environment=v;}
     public String getApiEndpoint(){return apiEndpoint;} public void setApiEndpoint(String v){apiEndpoint=v;}

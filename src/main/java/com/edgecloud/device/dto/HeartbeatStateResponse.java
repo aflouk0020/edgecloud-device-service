@@ -1,0 +1,2 @@
+package com.edgecloud.device.dto;import com.edgecloud.device.entity.HeartbeatStatus;import java.time.LocalDateTime;import java.util.UUID;
+public record HeartbeatStateResponse(UUID deviceId,HeartbeatStatus status,LocalDateTime lastHeartbeat,LocalDateTime nextExpectedHeartbeat,int heartbeatIntervalSeconds,int heartbeatTimeoutSeconds,int consecutiveMissedHeartbeats,LocalDateTime lastRecoveryAt,Long connectionDurationSeconds){}

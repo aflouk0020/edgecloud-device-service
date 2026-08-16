@@ -9,12 +9,14 @@ import static org.mockito.Mockito.when;
 
 import com.edgecloud.device.config.DeviceThresholdProperties;
 import com.edgecloud.device.entity.DeviceStatus;
+import com.edgecloud.device.entity.HeartbeatStatus;
 import com.edgecloud.device.entity.EdgeDevice;
 import com.edgecloud.device.repository.EdgeDeviceRepository;
 import com.edgecloud.device.repository.DeviceGroupRepository;
 import com.edgecloud.device.repository.DeviceTagRepository;
 import com.edgecloud.device.repository.DeviceGroupMembershipRepository;
 import com.edgecloud.device.repository.DeviceTagAssignmentRepository;
+import com.edgecloud.device.repository.DeviceConfigurationRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -38,13 +40,22 @@ class DeviceInventoryServiceImplTest {
     @Mock DeviceGroupMembershipRepository memberships;
     @Mock DeviceTagAssignmentRepository assignments;
     @Mock ProjectScopeClient projects;
+    @Mock DeviceConfigurationRepository configurations;
     private DeviceInventoryServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new DeviceInventoryServiceImpl(repository, new DeviceThresholdProperties(60), groups, tags, memberships, assignments, projects);
+        service = new DeviceInventoryServiceImpl(repository, new DeviceThresholdProperties(60), groups, tags, memberships, assignments, projects, configurations, new HeartbeatPolicyServiceImpl());
         org.mockito.Mockito.lenient().when(memberships.findByDeviceIdIn(any())).thenReturn(List.of());
         org.mockito.Mockito.lenient().when(assignments.findByDeviceIdIn(any())).thenReturn(List.of());
+        org.mockito.Mockito.lenient().when(configurations.findAllById(any())).thenReturn(List.of());
+    }
+
+    @Test
+    void filtersByHeartbeatStateWithoutRequiringProjectScope() {
+        when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
+        var response=service.getInventory("",0,20,"name","asc",null,null,List.of(),HeartbeatStatus.OFFLINE,null);
+        assertThat(response.totalElements()).isZero();verify(repository).findAll(any(Specification.class),any(Pageable.class));
     }
 
     @Test
@@ -59,8 +70,8 @@ class DeviceInventoryServiceImplTest {
         assertThat(response.devices()).hasSize(2);
         assertThat(response.devices()).extracting(item -> item.operationalStatus())
                 .containsExactly(DeviceStatus.ONLINE, DeviceStatus.OFFLINE);
-        assertThat(response.devices().get(0).heartbeatStatus()).isEqualTo("CURRENT");
-        assertThat(response.devices().get(1).heartbeatStatus()).isEqualTo("STALE");
+        assertThat(response.devices().get(0).heartbeatStatus()).isEqualTo("ONLINE");
+        assertThat(response.devices().get(1).heartbeatStatus()).isEqualTo("OFFLINE");
         assertThat(response.devices()).allSatisfy(item -> {
             assertThat(item.firmwareVersion()).isNull();
             assertThat(item.assignedProject()).isNull();
@@ -107,7 +118,7 @@ class DeviceInventoryServiceImplTest {
         when(groups.findByIdAndProjectId(group,project)).thenReturn(java.util.Optional.of(new com.edgecloud.device.entity.DeviceGroup(group,project)));
         when(tags.findAllByIdInAndProject(any(),eq(project))).thenReturn(List.of(new com.edgecloud.device.entity.DeviceTag(tag1,project),new com.edgecloud.device.entity.DeviceTag(tag2,project)));
         when(repository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(new PageImpl<>(List.of(match)));
-        var result=service.getInventory("Alpha",0,10,"registrationDate","desc",project,group,List.of(tag1,tag2),"token");
+        var result=service.getInventory("Alpha",0,10,"registrationDate","desc",project,group,List.of(tag1,tag2),HeartbeatStatus.ONLINE,"token");
         assertThat(result.devices()).hasSize(1);
         assertThat(result.devices().get(0).assignedProject()).isEqualTo(project.toString());
         var pageable=org.mockito.ArgumentCaptor.forClass(Pageable.class);
