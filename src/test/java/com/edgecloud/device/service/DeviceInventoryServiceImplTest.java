@@ -11,8 +11,16 @@ import com.edgecloud.device.config.DeviceThresholdProperties;
 import com.edgecloud.device.entity.DeviceStatus;
 import com.edgecloud.device.entity.EdgeDevice;
 import com.edgecloud.device.repository.EdgeDeviceRepository;
+import com.edgecloud.device.repository.DeviceGroupRepository;
+import com.edgecloud.device.repository.DeviceTagRepository;
+import com.edgecloud.device.repository.DeviceGroupMembershipRepository;
+import com.edgecloud.device.repository.DeviceTagAssignmentRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import java.util.Set;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +33,18 @@ import org.springframework.data.domain.Pageable;
 class DeviceInventoryServiceImplTest {
 
     @Mock EdgeDeviceRepository repository;
+    @Mock DeviceGroupRepository groups;
+    @Mock DeviceTagRepository tags;
+    @Mock DeviceGroupMembershipRepository memberships;
+    @Mock DeviceTagAssignmentRepository assignments;
+    @Mock ProjectScopeClient projects;
     private DeviceInventoryServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new DeviceInventoryServiceImpl(repository, new DeviceThresholdProperties(60));
+        service = new DeviceInventoryServiceImpl(repository, new DeviceThresholdProperties(60), groups, tags, memberships, assignments, projects);
+        org.mockito.Mockito.lenient().when(memberships.findByDeviceIdIn(any())).thenReturn(List.of());
+        org.mockito.Mockito.lenient().when(assignments.findByDeviceIdIn(any())).thenReturn(List.of());
     }
 
     @Test
@@ -81,6 +96,33 @@ class DeviceInventoryServiceImplTest {
     void supportsEmptyInventory() {
         when(repository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
         assertThat(service.getInventory("", 0, 20, "status", "asc").devices()).isEmpty();
+    }
+
+    @Test
+    void composesProjectGroupMultipleTagSearchPaginationAndSortingFilters() {
+        UUID project=UUID.randomUUID(),group=UUID.randomUUID(),tag1=UUID.randomUUID(),tag2=UUID.randomUUID();
+        EdgeDevice match=device("Alpha",DeviceStatus.ONLINE,LocalDateTime.now());
+        ReflectionTestUtils.setField(match,"id",UUID.randomUUID());
+        when(projects.projectDeviceIds(project,"token")).thenReturn(Set.of(match.getId()));
+        when(groups.findByIdAndProjectId(group,project)).thenReturn(java.util.Optional.of(new com.edgecloud.device.entity.DeviceGroup(group,project)));
+        when(tags.findAllByIdInAndProject(any(),eq(project))).thenReturn(List.of(new com.edgecloud.device.entity.DeviceTag(tag1,project),new com.edgecloud.device.entity.DeviceTag(tag2,project)));
+        when(repository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(new PageImpl<>(List.of(match)));
+        var result=service.getInventory("Alpha",0,10,"registrationDate","desc",project,group,List.of(tag1,tag2),"token");
+        assertThat(result.devices()).hasSize(1);
+        assertThat(result.devices().get(0).assignedProject()).isEqualTo(project.toString());
+        var pageable=org.mockito.ArgumentCaptor.forClass(Pageable.class);
+        verify(repository).findAll(any(Specification.class),pageable.capture());
+        assertThat(pageable.getValue().getPageSize()).isEqualTo(10);
+        assertThat(pageable.getValue().getSort().getOrderFor("registeredAt").isDescending()).isTrue();
+    }
+
+    @Test
+    void rejectsFiltersWithoutProjectAndCrossProjectIdentifiers() {
+        UUID project=UUID.randomUUID(),group=UUID.randomUUID();
+        assertThatThrownBy(()->service.getInventory("",0,20,"name","asc",null,group,List.of(),"token")).isInstanceOf(IllegalArgumentException.class);
+        when(projects.projectDeviceIds(project,"token")).thenReturn(Set.of());
+        when(groups.findByIdAndProjectId(group,project)).thenReturn(java.util.Optional.empty());
+        assertThatThrownBy(()->service.getInventory("",0,20,"name","asc",project,group,List.of(),"token")).isInstanceOf(com.edgecloud.device.exception.ProjectScopeAccessException.class);
     }
 
     @Test

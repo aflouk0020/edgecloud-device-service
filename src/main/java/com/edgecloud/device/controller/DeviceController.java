@@ -8,6 +8,8 @@ import com.edgecloud.device.dto.DeviceInventoryResponse;
 import com.edgecloud.device.service.DeviceAnalyticsService;
 import com.edgecloud.device.service.DeviceInventoryService;
 import com.edgecloud.device.service.DeviceRegistrationService;
+import com.edgecloud.device.security.EdgeCloudJwtAuthenticationToken;
+import com.edgecloud.device.exception.ProjectScopeAccessException;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -60,8 +62,19 @@ public class DeviceController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name") String sort,
-            @RequestParam(defaultValue = "asc") String direction) {
-        return ResponseEntity.ok(deviceInventoryService.getInventory(search, page, size, sort, direction));
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(required = false) java.util.UUID projectId,
+            @RequestParam(required = false) java.util.UUID groupId,
+            @RequestParam(required = false) List<java.util.UUID> tagIds,
+            EdgeCloudJwtAuthenticationToken auth) {
+        if ("PROJECT_ADMIN".equals(auth.getPlatformRole()) && projectId == null) {
+            throw new ProjectScopeAccessException("A project scope is required");
+        }
+        if (projectId == null && groupId == null && (tagIds == null || tagIds.isEmpty())) {
+            return ResponseEntity.ok(deviceInventoryService.getInventory(search, page, size, sort, direction));
+        }
+        return ResponseEntity.ok(deviceInventoryService.getInventory(search, page, size, sort, direction,
+                projectId, groupId, tagIds == null ? List.of() : tagIds, (String) auth.getCredentials()));
     }
 
     @GetMapping("/summary")

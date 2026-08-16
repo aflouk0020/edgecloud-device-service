@@ -13,8 +13,14 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidDeviceLifecycleException.class)
-    public ResponseEntity<Map<String, Object>> handleLifecycle(InvalidDeviceLifecycleException ex,
+    @ExceptionHandler(ProjectScopeAccessException.class)
+    public ResponseEntity<Map<String, Object>> handleProjectScope(ProjectScopeAccessException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("timestamp", LocalDateTime.now(), "status", 403,
+                "error", "Forbidden", "message", ex.getMessage(), "path", request.getRequestURI()));
+    }
+
+    @ExceptionHandler({InvalidDeviceLifecycleException.class, OrganisationConflictException.class})
+    public ResponseEntity<Map<String, Object>> handleLifecycle(RuntimeException ex,
             HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                 "timestamp", LocalDateTime.now(), "status", 409, "error", "Conflict",
