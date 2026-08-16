@@ -29,6 +29,10 @@ public class EdgeDevice {
     private LocalDateTime registeredAt;
 
     private LocalDateTime lastHeartbeat;
+    private LocalDateTime lastRecoveryAt;
+    private LocalDateTime onlineSince;
+    @Enumerated(EnumType.STRING) @Column(nullable=false) private HeartbeatStatus heartbeatState=HeartbeatStatus.UNKNOWN;
+    @Column(nullable=false) private int consecutiveMissedHeartbeats;
 
     @Column(length = 1000)
     private String description;
@@ -76,6 +80,10 @@ public class EdgeDevice {
     public void setLastHeartbeat(LocalDateTime lastHeartbeat) {
         this.lastHeartbeat = lastHeartbeat;
     }
+    public LocalDateTime getLastRecoveryAt(){return lastRecoveryAt;} public void setLastRecoveryAt(LocalDateTime v){lastRecoveryAt=v;}
+    public LocalDateTime getOnlineSince(){return onlineSince;} public void setOnlineSince(LocalDateTime v){onlineSince=v;}
+    public HeartbeatStatus getHeartbeatState(){return heartbeatState;} public void setHeartbeatState(HeartbeatStatus v){heartbeatState=v;}
+    public int getConsecutiveMissedHeartbeats(){return consecutiveMissedHeartbeats;} public void setConsecutiveMissedHeartbeats(int v){consecutiveMissedHeartbeats=v;}
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public String getPhysicalLocation() { return physicalLocation; }

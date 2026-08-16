@@ -1,0 +1,2 @@
+package com.edgecloud.device.config;import com.edgecloud.device.service.DeviceHeartbeatService;import java.time.LocalDateTime;import org.springframework.scheduling.annotation.Scheduled;import org.springframework.stereotype.Component;
+@Component public class HeartbeatEvaluationScheduler {private final DeviceHeartbeatService service;public HeartbeatEvaluationScheduler(DeviceHeartbeatService service){this.service=service;}@Scheduled(fixedDelayString="${edgecloud.device.heartbeat-evaluation-delay-ms:10000}") public void evaluate(){service.evaluateAll(LocalDateTime.now());}}

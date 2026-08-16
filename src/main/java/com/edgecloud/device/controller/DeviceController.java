@@ -66,15 +66,16 @@ public class DeviceController {
             @RequestParam(required = false) java.util.UUID projectId,
             @RequestParam(required = false) java.util.UUID groupId,
             @RequestParam(required = false) List<java.util.UUID> tagIds,
+            @RequestParam(required = false) com.edgecloud.device.entity.HeartbeatStatus heartbeatStatus,
             EdgeCloudJwtAuthenticationToken auth) {
         if ("PROJECT_ADMIN".equals(auth.getPlatformRole()) && projectId == null) {
             throw new ProjectScopeAccessException("A project scope is required");
         }
-        if (projectId == null && groupId == null && (tagIds == null || tagIds.isEmpty())) {
+        if (projectId == null && groupId == null && (tagIds == null || tagIds.isEmpty()) && heartbeatStatus == null) {
             return ResponseEntity.ok(deviceInventoryService.getInventory(search, page, size, sort, direction));
         }
         return ResponseEntity.ok(deviceInventoryService.getInventory(search, page, size, sort, direction,
-                projectId, groupId, tagIds == null ? List.of() : tagIds, (String) auth.getCredentials()));
+                projectId, groupId, tagIds == null ? List.of() : tagIds, heartbeatStatus, (String) auth.getCredentials()));
     }
 
     @GetMapping("/summary")

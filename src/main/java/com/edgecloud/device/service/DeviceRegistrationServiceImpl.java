@@ -26,13 +26,15 @@ public class DeviceRegistrationServiceImpl
 
     private final EdgeDeviceRepository repository;
     private final DeviceThresholdProperties thresholdProperties;
+    private final DeviceHeartbeatService heartbeatService;
 
     public DeviceRegistrationServiceImpl(
             EdgeDeviceRepository repository,
-            DeviceThresholdProperties thresholdProperties) {
+            DeviceThresholdProperties thresholdProperties, DeviceHeartbeatService heartbeatService) {
 
         this.repository = repository;
         this.thresholdProperties = thresholdProperties;
+        this.heartbeatService = heartbeatService;
     }
 
     @Override
@@ -65,29 +67,7 @@ public class DeviceRegistrationServiceImpl
 
     @Override
     public void evaluateDeviceStatuses() {
-        LocalDateTime thresholdTime = LocalDateTime.now()
-                .minusSeconds(
-                        thresholdProperties
-                                .offlineThresholdSeconds()
-                );
-
-        repository.findAll().forEach(device -> {
-            if (device.isActive()
-                    && device.getLastHeartbeat() != null
-                    && device.getLastHeartbeat()
-                    .isBefore(thresholdTime)
-                    && device.getStatus()
-                    == DeviceStatus.ONLINE) {
-
-                device.setStatus(DeviceStatus.OFFLINE);
-                repository.save(device);
-
-                LOGGER.info(
-                        "Device marked OFFLINE due to missed heartbeat: "
-                                + device.getDeviceName()
-                );
-            }
-        });
+        heartbeatService.evaluateAll(LocalDateTime.now());
     }
 
     @Override
@@ -108,15 +88,8 @@ public class DeviceRegistrationServiceImpl
                     "Inactive device cannot send heartbeats: " + request.deviceId());
         }
 
-        LocalDateTime heartbeatTime =
-                request.timestamp() != null
-                        ? request.timestamp()
-                        : LocalDateTime.now();
-
-        device.setLastHeartbeat(heartbeatTime);
-        device.setStatus(DeviceStatus.ONLINE);
-
-        EdgeDevice saved = repository.save(device);
+        heartbeatService.record(request.deviceId(), request.timestamp());
+        EdgeDevice saved = repository.findById(request.deviceId()).orElseThrow();
         return toResponse(saved);
     }
 

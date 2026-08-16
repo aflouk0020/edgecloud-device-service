@@ -1,0 +1,3 @@
+package com.edgecloud.device.repository;
+import com.edgecloud.device.entity.*;import java.time.LocalDateTime;import java.util.List;import java.util.UUID;import org.springframework.data.domain.*;import org.springframework.data.jpa.repository.*;
+public interface DeviceHeartbeatHistoryRepository extends JpaRepository<DeviceHeartbeatHistory,Long>{Page<DeviceHeartbeatHistory> findByDeviceIdOrderByHeartbeatAtDescIdDesc(UUID deviceId,Pageable pageable);long countByDeviceId(UUID deviceId);long countByDeviceIdAndEventType(UUID deviceId,HeartbeatEventType type);long countByDeviceIdAndEventTypeInAndHeartbeatAtBetween(UUID deviceId,List<HeartbeatEventType> types,LocalDateTime from,LocalDateTime to);}

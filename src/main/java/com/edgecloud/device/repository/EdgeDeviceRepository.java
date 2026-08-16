@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 public interface EdgeDeviceRepository extends JpaRepository<EdgeDevice, UUID>, JpaSpecificationExecutor<EdgeDevice> {
@@ -21,6 +22,7 @@ public interface EdgeDeviceRepository extends JpaRepository<EdgeDevice, UUID>, J
     @Query("select d from EdgeDevice d where d.id = :id")
     Optional<EdgeDevice> findByIdForUpdate(UUID id);
     long countByStatus(DeviceStatus status);
+    List<EdgeDevice> findByActiveTrue();
 
     Page<EdgeDevice> findByDeviceNameContainingIgnoreCase(String deviceName, Pageable pageable);
     Page<EdgeDevice> findByIdOrDeviceNameContainingIgnoreCase(UUID id, String deviceName, Pageable pageable);

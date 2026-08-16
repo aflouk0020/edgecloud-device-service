@@ -1,0 +1,2 @@
+package com.edgecloud.device.service;import com.edgecloud.device.dto.*;import java.time.LocalDateTime;import java.util.UUID;
+public interface DeviceHeartbeatService {HeartbeatStateResponse state(UUID id,LocalDateTime now);HeartbeatStateResponse record(UUID id,LocalDateTime at);HeartbeatHistoryResponse history(UUID id,int page,int size);HeartbeatStatisticsResponse statistics(UUID id);void evaluateAll(LocalDateTime now);}
