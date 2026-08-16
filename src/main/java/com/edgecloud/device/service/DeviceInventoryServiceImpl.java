@@ -132,6 +132,8 @@ public class DeviceInventoryServiceImpl implements DeviceInventoryService {
                 heartbeat.consecutiveMissedHeartbeats(),device.getLastRecoveryAt(),heartbeat.connectionDuration()==null?null:heartbeat.connectionDuration().getSeconds(),
                 device.getFirmwareVersion(), projectId==null?null:projectId.toString(),
                 device.getRegisteredAt(), device.getLastHeartbeat(), organisationTags, groupLabels, device.getPhysicalLocation(),
-                device.getDescription(), device.getOperatingSystem(), device.isActive(), device.getUpdatedAt());
+                device.getDescription(), device.getOperatingSystem(), device.isActive(), device.isMaintenanceMode(),
+                device.getMaintenanceReason(), device.getMaintenanceEnabledAt(), device.getMaintenanceEnabledBy(),
+                device.getMaintenanceScheduledEndAt(), device.getUpdatedAt());
     }
 }
