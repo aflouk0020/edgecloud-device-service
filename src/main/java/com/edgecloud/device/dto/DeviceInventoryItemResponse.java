@@ -29,5 +29,10 @@ public record DeviceInventoryItemResponse(
         String description,
         String operatingSystem,
         boolean active,
+        boolean maintenanceMode,
+        String maintenanceReason,
+        LocalDateTime maintenanceEnabledAt,
+        UUID maintenanceEnabledBy,
+        LocalDateTime maintenanceScheduledEndAt,
         LocalDateTime updatedAt) {
 }

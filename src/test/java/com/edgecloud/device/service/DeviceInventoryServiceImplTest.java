@@ -61,6 +61,8 @@ class DeviceInventoryServiceImplTest {
     @Test
     void returnsPagedInventoryIncludingOfflineDevicesAndMissingOptionalMetadata() {
         EdgeDevice online = device("Alpha", DeviceStatus.ONLINE, LocalDateTime.now().minusSeconds(10));
+        online.setMaintenanceMode(true);
+        online.setMaintenanceReason("Planned inspection");
         EdgeDevice offline = device("Bravo", DeviceStatus.OFFLINE, LocalDateTime.now().minusMinutes(5));
         when(repository.findAll(any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(online, offline)));
@@ -72,6 +74,8 @@ class DeviceInventoryServiceImplTest {
                 .containsExactly(DeviceStatus.ONLINE, DeviceStatus.OFFLINE);
         assertThat(response.devices().get(0).heartbeatStatus()).isEqualTo("ONLINE");
         assertThat(response.devices().get(1).heartbeatStatus()).isEqualTo("OFFLINE");
+        assertThat(response.devices().get(0).maintenanceMode()).isTrue();
+        assertThat(response.devices().get(0).maintenanceReason()).isEqualTo("Planned inspection");
         assertThat(response.devices()).allSatisfy(item -> {
             assertThat(item.firmwareVersion()).isNull();
             assertThat(item.assignedProject()).isNull();

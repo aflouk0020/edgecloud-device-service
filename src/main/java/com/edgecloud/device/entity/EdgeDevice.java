@@ -50,6 +50,16 @@ public class EdgeDevice {
     private boolean active = true;
 
     @Column(nullable = false)
+    private boolean maintenanceMode;
+    @Column(length = 500)
+    private String maintenanceReason;
+    private LocalDateTime maintenanceEnabledAt;
+    private UUID maintenanceEnabledBy;
+    private LocalDateTime maintenanceScheduledEndAt;
+    private LocalDateTime maintenanceDisabledAt;
+    private UUID maintenanceDisabledBy;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist
@@ -95,4 +105,18 @@ public class EdgeDevice {
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public boolean isMaintenanceMode() { return maintenanceMode; }
+    public void setMaintenanceMode(boolean maintenanceMode) { this.maintenanceMode = maintenanceMode; }
+    public String getMaintenanceReason() { return maintenanceReason; }
+    public void setMaintenanceReason(String maintenanceReason) { this.maintenanceReason = maintenanceReason; }
+    public LocalDateTime getMaintenanceEnabledAt() { return maintenanceEnabledAt; }
+    public void setMaintenanceEnabledAt(LocalDateTime maintenanceEnabledAt) { this.maintenanceEnabledAt = maintenanceEnabledAt; }
+    public UUID getMaintenanceEnabledBy() { return maintenanceEnabledBy; }
+    public void setMaintenanceEnabledBy(UUID maintenanceEnabledBy) { this.maintenanceEnabledBy = maintenanceEnabledBy; }
+    public LocalDateTime getMaintenanceScheduledEndAt() { return maintenanceScheduledEndAt; }
+    public void setMaintenanceScheduledEndAt(LocalDateTime value) { this.maintenanceScheduledEndAt = value; }
+    public LocalDateTime getMaintenanceDisabledAt() { return maintenanceDisabledAt; }
+    public void setMaintenanceDisabledAt(LocalDateTime maintenanceDisabledAt) { this.maintenanceDisabledAt = maintenanceDisabledAt; }
+    public UUID getMaintenanceDisabledBy() { return maintenanceDisabledBy; }
+    public void setMaintenanceDisabledBy(UUID maintenanceDisabledBy) { this.maintenanceDisabledBy = maintenanceDisabledBy; }
 }
