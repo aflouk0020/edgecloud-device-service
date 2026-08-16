@@ -32,9 +32,9 @@ public class GlobalExceptionHandler {
                 "path", request.getRequestURI()));
     }
 
-    @ExceptionHandler(DuplicateDeviceException.class)
+    @ExceptionHandler({DuplicateDeviceException.class, DuplicateConfigurationTemplateException.class})
     public ResponseEntity<Map<String, Object>> handleDuplicateDevice(
-            DuplicateDeviceException ex,
+            RuntimeException ex,
             HttpServletRequest request) {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
