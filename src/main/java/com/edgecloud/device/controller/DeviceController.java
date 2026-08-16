@@ -4,7 +4,9 @@ import com.edgecloud.device.dto.DeviceHeartbeatRequest;
 import com.edgecloud.device.dto.DeviceRegistrationRequest;
 import com.edgecloud.device.dto.DeviceResponse;
 import com.edgecloud.device.dto.DeviceSummaryResponse;
+import com.edgecloud.device.dto.DeviceInventoryResponse;
 import com.edgecloud.device.service.DeviceAnalyticsService;
+import com.edgecloud.device.service.DeviceInventoryService;
 import com.edgecloud.device.service.DeviceRegistrationService;
 import jakarta.validation.Valid;
 
@@ -20,12 +22,15 @@ public class DeviceController {
 
     private final DeviceRegistrationService deviceRegistrationService;
     private final DeviceAnalyticsService deviceAnalyticsService;
+    private final DeviceInventoryService deviceInventoryService;
 
     public DeviceController(
             DeviceRegistrationService deviceRegistrationService,
-            DeviceAnalyticsService deviceAnalyticsService) {
+            DeviceAnalyticsService deviceAnalyticsService,
+            DeviceInventoryService deviceInventoryService) {
         this.deviceRegistrationService = deviceRegistrationService;
         this.deviceAnalyticsService = deviceAnalyticsService;
+        this.deviceInventoryService = deviceInventoryService;
     }
 
     @PostMapping("/register")
@@ -47,6 +52,16 @@ public class DeviceController {
     @GetMapping
     public ResponseEntity<List<DeviceResponse>> getAllDevices() {
         return ResponseEntity.ok(deviceRegistrationService.getAllDevices());
+    }
+
+    @GetMapping("/inventory")
+    public ResponseEntity<DeviceInventoryResponse> getInventory(
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name") String sort,
+            @RequestParam(defaultValue = "asc") String direction) {
+        return ResponseEntity.ok(deviceInventoryService.getInventory(search, page, size, sort, direction));
     }
 
     @GetMapping("/summary")
