@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 public interface EdgeDeviceRepository extends JpaRepository<EdgeDevice, UUID>, JpaSpecificationExecutor<EdgeDevice> {
     boolean existsByDeviceName(String deviceName);
@@ -23,6 +24,7 @@ public interface EdgeDeviceRepository extends JpaRepository<EdgeDevice, UUID>, J
     Optional<EdgeDevice> findByIdForUpdate(UUID id);
     long countByStatus(DeviceStatus status);
     List<EdgeDevice> findByActiveTrue();
+    List<EdgeDevice> findByMaintenanceModeTrueAndMaintenanceScheduledEndAtLessThanEqual(LocalDateTime now);
 
     Page<EdgeDevice> findByDeviceNameContainingIgnoreCase(String deviceName, Pageable pageable);
     Page<EdgeDevice> findByIdOrDeviceNameContainingIgnoreCase(UUID id, String deviceName, Pageable pageable);
