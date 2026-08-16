@@ -18,6 +18,8 @@ public class DeviceSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/management").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/management/configuration-templates").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/management/configuration-templates/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/management/**").hasRole("ADMIN")
                         .requestMatchers("/management/**").hasAnyRole("ADMIN", "OPERATOR")
                         .requestMatchers(HttpMethod.GET, "/inventory").hasAnyRole("ADMIN", "OPERATOR")
