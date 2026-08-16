@@ -86,8 +86,9 @@ public class DeviceInventoryServiceImpl implements DeviceInventoryService {
         }
 
         return new DeviceInventoryItemResponse(
-                device.getId(), device.getDeviceName(), device.getDeviceType(), device.getStatus(),
-                heartbeatStatus, device.getLastHeartbeat(), null, null, device.getRegisteredAt(),
-                device.getLastHeartbeat(), List.of(), null);
+                device.getId(), device.getDeviceName(), device.getDeviceType(), device.getIpAddress(), device.getStatus(),
+                heartbeatStatus, device.getLastHeartbeat(), device.getFirmwareVersion(), null,
+                device.getRegisteredAt(), device.getLastHeartbeat(), List.of(), device.getPhysicalLocation(),
+                device.getDescription(), device.getOperatingSystem(), device.isActive(), device.getUpdatedAt());
     }
 }

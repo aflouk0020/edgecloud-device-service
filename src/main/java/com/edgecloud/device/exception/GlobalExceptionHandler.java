@@ -13,6 +13,14 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvalidDeviceLifecycleException.class)
+    public ResponseEntity<Map<String, Object>> handleLifecycle(InvalidDeviceLifecycleException ex,
+            HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", LocalDateTime.now(), "status", 409, "error", "Conflict",
+                "message", ex.getMessage(), "path", request.getRequestURI()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {

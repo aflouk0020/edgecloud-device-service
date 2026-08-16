@@ -9,6 +9,7 @@ public record DeviceInventoryItemResponse(
         UUID deviceId,
         String name,
         String type,
+        String ipAddress,
         DeviceStatus operationalStatus,
         String heartbeatStatus,
         LocalDateTime latestHeartbeat,
@@ -17,5 +18,9 @@ public record DeviceInventoryItemResponse(
         LocalDateTime registrationDate,
         LocalDateTime lastSeen,
         List<String> tags,
-        String location) {
+        String location,
+        String description,
+        String operatingSystem,
+        boolean active,
+        LocalDateTime updatedAt) {
 }

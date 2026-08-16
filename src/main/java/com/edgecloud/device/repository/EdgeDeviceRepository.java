@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface EdgeDeviceRepository extends JpaRepository<EdgeDevice, UUID>, JpaSpecificationExecutor<EdgeDevice> {
     boolean existsByDeviceName(String deviceName);
+    boolean existsByDeviceNameAndIdNot(String deviceName, UUID id);
     Optional<EdgeDevice> findByDeviceName(String deviceName);
     long countByStatus(DeviceStatus status);
 
