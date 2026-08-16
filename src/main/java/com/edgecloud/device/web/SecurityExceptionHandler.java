@@ -15,6 +15,10 @@ public final class SecurityExceptionHandler {
         write(response, HttpStatus.UNAUTHORIZED, message);
     }
 
+    public static void writeForbidden(HttpServletResponse response, String message) throws IOException {
+        write(response, HttpStatus.FORBIDDEN, message);
+    }
+
     private static void write(HttpServletResponse response, HttpStatus status, String message) throws IOException {
         if (response.isCommitted()) {
             return;

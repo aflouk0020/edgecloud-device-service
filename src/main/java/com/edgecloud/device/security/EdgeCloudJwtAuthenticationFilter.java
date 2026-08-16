@@ -16,7 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class EdgeCloudJwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final List<String> PROTECTED_PATH_PREFIXES = List.of("/internal/device-health");
+    private static final List<String> PROTECTED_PATH_PREFIXES = List.of("/internal/device-health", "/inventory");
 
     private final JwtService jwtService;
 

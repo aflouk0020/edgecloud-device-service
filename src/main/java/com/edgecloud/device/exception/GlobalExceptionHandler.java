@@ -13,6 +13,17 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(
+            IllegalArgumentException ex, HttpServletRequest request) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
+                "error", "Bad Request",
+                "message", ex.getMessage(),
+                "path", request.getRequestURI()));
+    }
+
     @ExceptionHandler(DuplicateDeviceException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicateDevice(
             DuplicateDeviceException ex,
