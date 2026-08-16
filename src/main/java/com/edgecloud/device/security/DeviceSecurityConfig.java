@@ -17,6 +17,9 @@ public class DeviceSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/management").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/management/**").hasRole("ADMIN")
+                        .requestMatchers("/management/**").hasAnyRole("ADMIN", "OPERATOR")
                         .requestMatchers(HttpMethod.GET, "/inventory").hasAnyRole("ADMIN", "OPERATOR")
                         .anyRequest().permitAll())
                 .exceptionHandling(exceptions -> exceptions

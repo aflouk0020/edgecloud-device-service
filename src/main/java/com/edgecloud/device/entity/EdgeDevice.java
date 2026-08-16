@@ -30,11 +30,34 @@ public class EdgeDevice {
 
     private LocalDateTime lastHeartbeat;
 
+    @Column(length = 1000)
+    private String description;
+
+    @Column(name = "physical_location")
+    private String physicalLocation;
+
+    @Column(name = "firmware_version", length = 100)
+    private String firmwareVersion;
+
+    @Column(name = "operating_system", length = 100)
+    private String operatingSystem;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
     @PrePersist
     public void prePersist() {
         this.status = DeviceStatus.OFFLINE;
         this.registeredAt = LocalDateTime.now();
+        this.updatedAt = this.registeredAt;
+        this.active = true;
     }
+
+    @PreUpdate
+    public void preUpdate() { this.updatedAt = LocalDateTime.now(); }
 
     public UUID getId() { return id; }
     public String getDeviceName() { return deviceName; }
@@ -53,4 +76,15 @@ public class EdgeDevice {
     public void setLastHeartbeat(LocalDateTime lastHeartbeat) {
         this.lastHeartbeat = lastHeartbeat;
     }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getPhysicalLocation() { return physicalLocation; }
+    public void setPhysicalLocation(String physicalLocation) { this.physicalLocation = physicalLocation; }
+    public String getFirmwareVersion() { return firmwareVersion; }
+    public void setFirmwareVersion(String firmwareVersion) { this.firmwareVersion = firmwareVersion; }
+    public String getOperatingSystem() { return operatingSystem; }
+    public void setOperatingSystem(String operatingSystem) { this.operatingSystem = operatingSystem; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

@@ -72,7 +72,8 @@ public class DeviceRegistrationServiceImpl
                 );
 
         repository.findAll().forEach(device -> {
-            if (device.getLastHeartbeat() != null
+            if (device.isActive()
+                    && device.getLastHeartbeat() != null
                     && device.getLastHeartbeat()
                     .isBefore(thresholdTime)
                     && device.getStatus()
@@ -101,6 +102,11 @@ public class DeviceRegistrationServiceImpl
                                         + request.deviceId()
                         )
                 );
+
+        if (!device.isActive()) {
+            throw new com.edgecloud.device.exception.InvalidDeviceLifecycleException(
+                    "Inactive device cannot send heartbeats: " + request.deviceId());
+        }
 
         LocalDateTime heartbeatTime =
                 request.timestamp() != null
